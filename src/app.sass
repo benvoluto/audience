@@ -1,0 +1,57 @@
+html 
+  background-color: black
+
+button
+  font-size: 1.5em
+  border: 1.5px solid grey
+  border-radius: 6px
+  background-color: white
+  padding: 5px 10px
+  font-weight: bold
+
+.app
+  .addbutton
+    position: absolute
+    z-index: 10
+    bottom: 3em
+    left: 45vw
+
+  .camera
+    text-align: center
+
+  .flip
+    display: flex
+    flex-direction: column
+
+    .frames
+      position: relative
+      width: 100vw
+
+    .frame
+      position: absolute
+      overflow: hidden
+      visibility: hidden
+      text-align: center
+      width: 100vw
+
+    .active
+      visibility: visible
+
+      .frameImage
+        display: inline-block
+        width: auto
+        height: 90vh
+        margin: auto
+
+  &.step-0
+    .flip
+      display: flex
+    .camera
+      display: none
+
+  &.step-1
+    .flip
+      display: none
+    .camera
+      display: block
+
