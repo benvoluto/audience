@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import Camera, { FACING_MODES, IMAGE_TYPES } from 'react-html5-camera-photo';
 import firebase from './firebase/firebase';
@@ -116,7 +116,7 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
             isFullscreen={isFullscreen}
             onTakePhotoAnimationDone = { handleAnimationDone }
             onCameraError = { (error) => { handleCameraError(error); } }
-            idealFacingMode = {FACING_MODES.ENVIRONMENT}
+            idealFacingMode = {FACING_MODES.USER}
             idealResolution = {{width: 600, height: 900}}
             imageType = {IMAGE_TYPES.JPG}
             imageCompression = {0.97}
