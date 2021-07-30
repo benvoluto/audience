@@ -82,14 +82,18 @@ const App = (props) => {
         </div>
       </div>
       <div className="camera">
-          <Add
-            dataUri={dataUri}
-            setDataUri={setDataUri}
-            setStep={setStep}
-            setCount={setCount}
-            imageNumber={imageNumber}
-            isFullscreen={isFullscreen}
-          />
+          {
+            step === 1 ? (
+              <Add
+              dataUri={dataUri}
+              setDataUri={setDataUri}
+              setStep={setStep}
+              setCount={setCount}
+              imageNumber={imageNumber}
+              isFullscreen={isFullscreen}
+            />
+            ) : null
+          }
       </div>
     </div>
   );
