@@ -12,19 +12,25 @@ const App = (props) => {
   const [currentImage, setCurrentImage] = useState(0);
   const [count, setCount] = useState(0);
   const [intervalId, setIntervalId] = useState(0);
+  const [cameraStatus, setCameraStatus] = useState(false);
   const imagesData = useRef(null);
   const intervalIdData = useRef(null);
+  const cameraStatusData = useRef(false);
 
   useEffect(() => {
     const prevImagesData = imagesData.current;
     const prevIntervalIdData = intervalIdData.current;
+    const prevCameraStatusData = cameraStatusData.current;
     if (images !== prevImagesData) {
       imagesData.current = images;
     }
     if (intervalIdData !== prevIntervalIdData) {
       intervalIdData.current = intervalId;
     }
-  },[images, imagesData, intervalId, intervalIdData]);
+    if (cameraStatusData !== prevCameraStatusData) {
+      cameraStatusData.current = cameraStatus;
+    }
+  },[images, imagesData, intervalId, intervalIdData, cameraStatus, cameraStatusData]);
 
   const handleAddPhoto = () => {
     setStep(1);
@@ -67,7 +73,7 @@ const App = (props) => {
     fetchImages('folder/');
   }, [count])
 
-  const isFullscreen = false;
+  const isFullscreen = true;
 
   return (
     <div className={`app step-${step}`}>
@@ -83,7 +89,7 @@ const App = (props) => {
       </div>
       <div className="camera">
           {
-            step === 1 ? (
+            (step === 1) ? (
               <Add
               dataUri={dataUri}
               setDataUri={setDataUri}
@@ -91,6 +97,7 @@ const App = (props) => {
               setCount={setCount}
               imageNumber={imageNumber}
               isFullscreen={isFullscreen}
+              setCameraStatus={setCameraStatus}
             />
             ) : null
           }

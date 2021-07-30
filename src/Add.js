@@ -5,16 +5,16 @@ import firebase from './firebase/firebase';
 import './index.css';
 import 'react-html5-camera-photo/build/css/index.css';
 
-export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, setCount}) => {
+export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, setCount, setCameraStatus}) => {
   let classNameFullscreen = isFullscreen ? 'demo-image-preview-fullscreen' : '';
 
   const handleCameraError = (error) => {
     console.log('handleCameraError', error);
   }
 
-  // const handleCameraStop = () => {
-  //   console.log('handleCameraStop');
-  // }
+  const handleCameraStart = () => {
+    setCameraStatus(true);
+  }
 
   const handleCancel = () => {
     console.log("cancel")
@@ -22,6 +22,7 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
   }
 
   const handleAnimationDone = (dataUri) => {
+    setCameraStatus(false);
     setDataUri(dataUri);
   }
 
@@ -78,8 +79,6 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
   const downloadImageFile = () => {
     let blob = dataURItoBlob(dataUri);
     const file = getFileName(imageNumber, blob.type);
-    console.log(file)
-
     const storage = firebase.storage();
     const storageRef = storage.ref();
     const uploadTask = storageRef.child('folder/' + file).put(blob);
@@ -115,6 +114,7 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
           <Camera
             isFullscreen={isFullscreen}
             onTakePhotoAnimationDone = { handleAnimationDone }
+            onCameraStart = { handleCameraStart }
             onCameraError = { (error) => { handleCameraError(error); } }
             idealFacingMode = {FACING_MODES.USER}
             idealResolution = {{width: 600, height: 900}}
