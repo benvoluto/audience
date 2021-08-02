@@ -1,109 +1,81 @@
-import React, { useState, useEffect, useRef} from 'react';
-import 'react-html5-camera-photo/build/css/index.css';
-import './app.sass';
+import React, { useState, useEffect } from 'react';
+import Show from './Show';
 import Add from './Add';
 import firebase from './firebase/firebase';
+import withFirebaseAuth from 'react-with-firebase-auth';
+import 'firebase/auth';
+import 'firebase/database';
+import './app.sass';
+import './index.css';
+
+const firebaseAppAuth = firebase.auth();
+const firebaseDatabase = firebase.database();
+const providers = {
+  googleProvider: new firebase.auth.GoogleAuthProvider(),
+};  
+
+const Nav = ({user, signOut, signInWithGoogle, handleShow, handleAdd }) => {
+  const Auth = () => (
+    <div className="welcome">
+      <div className="hello">Please sign in.</div>
+      <div className="signup">
+        <button onClick={signInWithGoogle}>Sign in with a Google account</button>
+      </div>
+    </div>
+  );
+
+  const Start = () => (
+    <div className="auth">
+      <div className="hello">
+        <button className="primary-button" onClick={handleAdd}>Add your photo</button>
+      </div>
+      <div className="goodbye">
+        Signed in as {user.displayName}.
+        <button className="secondary-button" >Choose album</button>
+        <button className="secondary-button" onClick={signOut}>Sign out</button>
+      </div>
+    </div>
+  );
+  
+  return user ? <Start /> : <Auth />;
+};
 
 const App = (props) => {
-  const [dataUri, setDataUri] = useState('');
-  const [imageNumber, setImageNumber] = useState(0);
-  const [step, setStep] = useState(0);
-  const [images, setImages] = useState([]);
-  const [currentImage, setCurrentImage] = useState(0);
+  const { user, signOut, signInWithGoogle } = props;
+  const [albums, setAlbums] = useState([]);
   const [count, setCount] = useState(0);
-  const [intervalId, setIntervalId] = useState(0);
-  const [cameraStatus, setCameraStatus] = useState(false);
-  const imagesData = useRef(null);
-  const intervalIdData = useRef(null);
-  const cameraStatusData = useRef(false);
+  const [currentAlbum, setCurrentAlbum] = useState(null);
+  const [currentView, setCurrentView] = useState('loading');
 
   useEffect(() => {
-    const prevImagesData = imagesData.current;
-    const prevIntervalIdData = intervalIdData.current;
-    const prevCameraStatusData = cameraStatusData.current;
-    if (images !== prevImagesData) {
-      imagesData.current = images;
-    }
-    if (intervalIdData !== prevIntervalIdData) {
-      intervalIdData.current = intervalId;
-    }
-    if (cameraStatusData !== prevCameraStatusData) {
-      cameraStatusData.current = cameraStatus;
-    }
-  },[images, imagesData, intervalId, intervalIdData, cameraStatus, cameraStatusData]);
-
-  const handleAddPhoto = () => {
-    setStep(1);
-    clearInterval(intervalIdData.current);
-  }
-
-  const animation = (countImages) => {
-    let imageNum = 0;
-    const flip = setInterval(() => {
-      if (imageNum < (countImages)) {
-        imageNum++;
-        setCurrentImage(imageNum);
-      } else {
-        setCurrentImage(0);
-        imageNum = 0;
-      }
-    }, 1600);
-    clearInterval(intervalIdData.current);
-    clearInterval(intervalId);
-    setIntervalId(flip);
-  };
-
-  useEffect(() => {
-    const fetchImages = async (folder) => {
-      const storage = firebase.storage();
-      const storageRef = storage.ref();
-      const listRef = storageRef.child(folder);
-      await listRef.listAll().then(result => {
-        let promises = result.items.map((imageItem) => {
-          return imageItem.getDownloadURL();
-        });
-        Promise.all(promises).then(urls => {
-          setImages(urls);
-          setCount(urls.length);
-          setImageNumber(urls.length);
-          animation(urls.length);
-        });
+    let isSubscribed = true;
+    const GetAlbumList = async () => {
+      const ref = firebaseDatabase.ref();
+      await ref.once('value').then(snapshot => {
+        if (isSubscribed) {
+          const list = Object.keys(snapshot.val());
+          setAlbums(list);
+          setCurrentAlbum(list[list.length - 1]);
+          setCurrentView('show');
+        }
+      }).catch(error => {
+        console.log(error);
       });
-    }
-    fetchImages('folder/');
-  }, [count])
+    };
+    GetAlbumList();
+    return () => isSubscribed = false;
+  }, [currentAlbum]);
 
-  const isFullscreen = true;
+  const handleShow = () => setCurrentView('show');
+  const handleAdd = () => setCurrentView('add');
 
   return (
-    <div className={`app step-${step}`}>
-      <div className="flip">
-        <div className="addbutton">
-          <button onClick={handleAddPhoto}>Add your photo</button>
-        </div>
-        <div className="frames">
-          {images.map((image, index) => {
-            return (<div key={`image-${index}`} className={currentImage === index ? "frame active" : "frame"}><img alt="portrait" className="frameImage" src={image} /></div>);
-          })}
-        </div>
-      </div>
-      <div className="camera">
-          {
-            (step === 1) ? (
-              <Add
-              dataUri={dataUri}
-              setDataUri={setDataUri}
-              setStep={setStep}
-              setCount={setCount}
-              imageNumber={imageNumber}
-              isFullscreen={isFullscreen}
-              setCameraStatus={setCameraStatus}
-            />
-            ) : null
-          }
-      </div>
+    <div className="app">
+      { currentAlbum ? <Nav user={user} signOut={signOut} signInWithGoogle={signInWithGoogle} handleShow={handleShow} handleAdd={handleAdd} albums={albums} /> : null }
+      { currentView === 'show' ? <Show album={currentAlbum} count={count} setCount={setCount} /> : null }
+      { currentView === 'add' ? <Add album={currentAlbum} count={count} setCount={setCount} setCurrentView={setCurrentView} /> : null }
     </div>
   );
 }
 
-export default App;
+export default withFirebaseAuth({providers,firebaseAppAuth})(App);

@@ -1,30 +1,27 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React, {useState} from 'react';
 import Camera, { FACING_MODES, IMAGE_TYPES } from 'react-html5-camera-photo';
 import firebase from './firebase/firebase';
-import './index.css';
 import 'react-html5-camera-photo/build/css/index.css';
+import 'firebase/storage';
 
-export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, setCount, setCameraStatus}) => {
-  let classNameFullscreen = isFullscreen ? 'demo-image-preview-fullscreen' : '';
+const storage = firebase.storage();
+
+export const Add = ({ count, setCount, album, setCurrentView }) => {
+
+  const [dataUri, setDataUri] = useState('');
+  let classNameFullscreen = 'demo-image-preview-fullscreen';
 
   const handleCameraError = (error) => {
     console.log('handleCameraError', error);
-  }
-
-  const handleCameraStart = () => {
-    setCameraStatus(true);
-  }
+  };
 
   const handleCancel = () => {
-    console.log("cancel")
-    setDataUri(null);
-  }
+    setDataUri('');
+  };
 
   const handleAnimationDone = (dataUri) => {
-    setCameraStatus(false);
     setDataUri(dataUri);
-  }
+  };
 
   const dataURItoBlob = (dataURI) => {
     let byteString = atob(dataURI.split(',')[1]);
@@ -54,7 +51,7 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
       extention = IMAGE_TYPES.JPG;
     }
     return extention;
-  }
+  };
   
   const getFileName = (imageNumber, blobType) => {
     const prefix = 'photo';
@@ -76,12 +73,11 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
   // }
 
 
-  const downloadImageFile = () => {
+  const sendImage = () => {
     let blob = dataURItoBlob(dataUri);
-    const file = getFileName(imageNumber, blob.type);
-    const storage = firebase.storage();
+    const file = getFileName(count, blob.type);
     const storageRef = storage.ref();
-    const uploadTask = storageRef.child('folder/' + file).put(blob);
+    const uploadTask = storageRef.child(album + '/' + file).put(blob);
 
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED,
       (snapshot) =>{
@@ -90,52 +86,46 @@ export const Add = ({ dataUri, isFullscreen, imageNumber, setDataUri, setStep, s
         throw error
       },() =>{
         uploadTask.snapshot.ref.getDownloadURL().then(() =>{
-          setDataUri('');
-          setStep(0);
-          setCount(0);
+          setCount(count++);
+          setCurrentView('show');
         })
-    }
-  ) 
-  }
+      }
+    ) 
+  };
 
   return (
-    <div>
+    <div className="camera">
     {
       (dataUri) ? (
         <div className="preview">
           <div className={'demo-image-preview ' + classNameFullscreen}>
             <img alt="your portrait, mate" src={dataUri} />
           </div>
-          <button onClick={downloadImageFile}>Looks good.</button>
-          <button onClick={handleCancel}>Retake!</button>
+          <div className="review">
+            <button className="primary-button" onClick={sendImage}>Looks good.</button>
+            <button className="primary-button" onClick={handleCancel}>Retake!</button>
+          </div>
         </div>
       ) : (
-        <div>
-          <Camera
-            isFullscreen={isFullscreen}
-            onTakePhotoAnimationDone = { handleAnimationDone }
-            onCameraStart = { handleCameraStart }
-            onCameraError = { (error) => { handleCameraError(error); } }
-            idealFacingMode = {FACING_MODES.USER}
-            idealResolution = {{width: 600, height: 900}}
-            imageType = {IMAGE_TYPES.JPG}
-            imageCompression = {0.97}
-            isMaxResolution = {false}
-            isImageMirror = {false}
-            isSilentMode = {false}
-            isDisplayStartCameraError = {true}
-            sizeFactor = {1}
-          />
-        </div>
+        <Camera
+          isFullscreen={true}
+          onTakePhotoAnimationDone = { handleAnimationDone }
+          onCameraError = { (error) => { handleCameraError(error); } }
+          idealFacingMode = {FACING_MODES.USER}
+          idealResolution = {{width: 1536, height: 2048}}
+          imageType = {IMAGE_TYPES.JPG}
+          album = {album}
+          imageCompression = {0.97}
+          isMaxResolution = {false}
+          isImageMirror = {false}
+          isSilentMode = {false}
+          isDisplayStartCameraError = {true}
+          sizeFactor = {1}
+        />
       )
     }
     </div>
   );
-};
-
-Add.propTypes = {
-  dataUri: PropTypes.string,
-  isFullscreen: PropTypes.bool
 };
 
 export default Add;
