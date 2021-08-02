@@ -30,7 +30,7 @@ const Nav = ({user, signOut, signInWithGoogle, handleAdd }) => {
         <button className="primary-button" onClick={handleAdd}>Add your photo</button>
       </div>
       {
-        user.displayName = "Ben Clemens"
+        user.displayName === "Ben Clemens"
         ?
         <div className="goodbye">
           {user.displayName} signed in.
