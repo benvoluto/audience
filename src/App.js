@@ -14,21 +14,26 @@ const providers = {
   googleProvider: new firebase.auth.GoogleAuthProvider(),
 };  
 
-const Nav = ({user, signOut, signInWithGoogle, handleAdd }) => {
+const Nav = ({user, signOut, signInWithGoogle, handleAdd, album}) => {
+  console.log(user)
   const Auth = () => (
     <div className="welcome">
-      <div className="hello">Please sign in.</div>
       <div className="signup">
-        <button onClick={signInWithGoogle}>Sign in with a Google account</button>
+        <button className="primary-button" onClick={signInWithGoogle}>Sign in with a Google account</button>
       </div>
     </div>
   );
 
   const Start = () => (
     <div className="auth">
-      <div className="hello">
-        <button className="primary-button" onClick={handleAdd}>Add your photo</button>
-      </div>
+      {
+        album 
+        ?
+        <div className="hello">
+          <button className="primary-button" onClick={handleAdd}>Add your photo</button>
+        </div>
+        : null
+      }
       {
         user.displayName === "Ben Clemens"
         ?
@@ -76,7 +81,7 @@ const App = (props) => {
 
   return (
     <div className="app">
-      { currentAlbum ? <Nav user={user} signOut={signOut} signInWithGoogle={signInWithGoogle} handleShow={handleShow} handleAdd={handleAdd} albums={albums} /> : null }
+      { <Nav user={user} signOut={signOut} signInWithGoogle={signInWithGoogle} handleShow={handleShow} handleAdd={handleAdd} album={currentAlbum} albums={albums} /> }
       { currentView === 'show' ? <Show album={currentAlbum} count={count} setCount={setCount} /> : null }
       { currentView === 'add' ? <Add album={currentAlbum} count={count} setCount={setCount} setCurrentView={setCurrentView} /> : null }
     </div>
