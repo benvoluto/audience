@@ -14,7 +14,7 @@ const providers = {
   googleProvider: new firebase.auth.GoogleAuthProvider(),
 };  
 
-const Nav = ({user, signOut, signInWithGoogle, handleShow, handleAdd }) => {
+const Nav = ({user, signOut, signInWithGoogle, handleAdd }) => {
   const Auth = () => (
     <div className="welcome">
       <div className="hello">Please sign in.</div>
@@ -29,11 +29,16 @@ const Nav = ({user, signOut, signInWithGoogle, handleShow, handleAdd }) => {
       <div className="hello">
         <button className="primary-button" onClick={handleAdd}>Add your photo</button>
       </div>
-      <div className="goodbye">
-        Signed in as {user.displayName}.
-        <button className="secondary-button" >Choose album</button>
-        <button className="secondary-button" onClick={signOut}>Sign out</button>
-      </div>
+      {
+        user.displayName = "Ben Clemens"
+        ?
+        <div className="goodbye">
+          {user.displayName} signed in.
+          <button className="secondary-button" >Choose album</button>
+          <button className="secondary-button" onClick={signOut}>Sign out</button>
+        </div>
+        : null
+      }
     </div>
   );
   
