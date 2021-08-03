@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 
-const firebaseConfig = {
+export const firebaseConfig = {
   apiKey: "AIzaSyAy0YuPBdXqBiK-VhuOLAq6S-RlrMMBBVk",
   authDomain: "audience-b9551.firebaseapp.com",
   projectId: "audience-b9551",
