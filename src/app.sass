@@ -11,9 +11,13 @@ html
   font-family: 'Fira Sans', sans-serif
   -webkit-font-smoothing: antialiased
   -moz-osx-font-smoothing: grayscale
+  overflow: hidden
 
-body
+
+body,
+#root
   margin: 0
+  overflow: hidden
 
 .primary-button
   text-decoration: none
@@ -45,7 +49,7 @@ body
 
 .secondary-button
   font-size: 1em
-  padding: .6em 1em
+  padding: .3em .6em
   border: 1px solid white
   box-shadow: none
   background-color: transparent
@@ -67,8 +71,10 @@ body
   align-itens: center
   justify-content: center
   position: relative
+  font-size: .9em
+  overflow: hidden
 
-  background: linear-gradient(-45deg, hsl(25deg, 100%, 50%), #E73C7E, #23A6D5, hsl(260deg, 100%, 55%))
+  background: linear-gradient(45deg, #f7b052, #f9d299, #f7b052, #95c5ca, #fd4a0c, #2279ae,  #fca1b2, #fca1b2)
   background-size: 400% 400%
   animation: Gradient 15s ease infinite
 
@@ -100,7 +106,7 @@ body
     justify-content: center
     align-items: center
     width: 100%
-    height: 5em
+    height: 6em
     color: white
     position: absolute
     left: 0
@@ -140,7 +146,7 @@ body
 
       .frameImage
         display: inline-block
-        width: 100vw
+        width: 107vw
         height: auto
         margin: auto
 
@@ -177,6 +183,7 @@ body
     z-index: 1
     height: 100vh
     width: 100vw
+    background-color: black
 
   .flip
     position: absolute
@@ -184,4 +191,30 @@ body
     top: 0
     z-index: 0
     
+  .label
+    padding: 1em
 
+  .albumForm
+    display: flex
+    justify-content: center
+    flex-wrap: nowrap
+    align-items: center
+
+    .albumInput
+      font-size: 1em
+      padding: .6em 1em
+      border: none
+      box-shadow: none
+      background-color: white
+      color: black
+      height: 3em
+      text-decoration: none
+      position: relative
+      font-family: 'Fira Sans', sans-serif
+      border-radius: 50px
+      margin: 5px
+      width: auto
+      outline: none
+    
+    .secondary-button
+      height: 3em

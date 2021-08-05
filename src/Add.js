@@ -108,7 +108,7 @@ export const Add = ({ count, setCount, album, setCurrentView }) => {
         </div>
       ) : (
         <Camera
-          isFullscreen={true}
+          isFullscreen={false}
           onTakePhotoAnimationDone = { handleAnimationDone }
           onCameraError = { (error) => { handleCameraError(error); } }
           idealFacingMode = {FACING_MODES.USER}
